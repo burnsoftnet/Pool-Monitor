@@ -1,5 +1,8 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <Wire.h>
 #include "dht.h"
 #include "ph_grav.h"  
 #include "arduino_secrets.h" 
