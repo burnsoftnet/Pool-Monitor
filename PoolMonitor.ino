@@ -32,9 +32,6 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 
 dht DHT;
-//String inputstring = "";                    //a string to hold incoming data from the PC
-//boolean input_string_complete = false;      //a flag to indicate have we received all the data from the PC
-//char inputstring_array[10];                 //a char array needed for string parsing
 bool buggerme = true;
 WiFiClient client;
 
@@ -55,6 +52,9 @@ void setup() {
   SetupDallasTempMonitor();
 }
 
+/*
+ * Initialize the Wifi connection.
+ */
 void InitWifi()
 {
   isConnected = false;
