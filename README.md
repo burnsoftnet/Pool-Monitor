@@ -34,3 +34,7 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 
 - Arduino IDE
 - DallasTemperature ( https://github.com/milesburton/Arduino-Temperature-Control-Library/blob/master/DallasTemperature.h )
+
+## Schematic
+
+![](Schematic/PoolMonitor.png)
