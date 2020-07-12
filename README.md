@@ -38,3 +38,9 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 ## Schematic
 
 ![](Schematic/PoolMonitor.png)
+
+## Web UI
+
+There is nothing much to the web ui, it will just display the outside temperature, the outside humidity, the pool temperature and the pH Level.
+
+![](pictures/webui.png)

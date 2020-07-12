@@ -13,7 +13,7 @@ char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 bool isConnected;                           //marker to toggle the connection for serial diagnostics
-bool useWifi=false;                         //Enabled or disable the wifi functionality and the webpage
+bool useWifi=true;                         //Enabled or disable the wifi functionality and the webpage
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = 2;                     //Assigned Pool monitor A2 to the Water proof temperature sensor
