@@ -32,9 +32,9 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 
 dht DHT;
-String inputstring = "";                    //a string to hold incoming data from the PC
-boolean input_string_complete = false;      //a flag to indicate have we received all the data from the PC
-char inputstring_array[10];                 //a char array needed for string parsing
+//String inputstring = "";                    //a string to hold incoming data from the PC
+//boolean input_string_complete = false;      //a flag to indicate have we received all the data from the PC
+//char inputstring_array[10];                 //a char array needed for string parsing
 bool buggerme = true;
 WiFiClient client;
 
@@ -78,15 +78,27 @@ void setup() {
   // you're connected now, so print out the status:
   
   printWifiStatus();
+
+  SetupPH();
+  SetupDallasTempMonitor();
+}
+
+void SetupPH()
+{
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
   Serial.println("");
   Serial.println("Press 0 to Display Command Menu");
   
   poolSensor.begin();
+}
+
+void SetupDallasTempMonitor()
+{
   //Start the I2C interface
   Wire.begin(SLAVE_ADDRESS);
   Wire.onRequest(requestEvent);
 }
+
 /*
  * Print debug messages to the serial output
  */
