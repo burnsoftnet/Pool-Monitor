@@ -13,9 +13,10 @@ char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 bool isConnected;                           //marker to toggle the connection for serial diagnostics
-#define dht_apin A0                         // Analog Pin sensor is connected to
+#define OutsideTemp A0                         // Analog Pin sensor is connected to
+#define PoolTemp A2
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
-const int PoolTemp = A2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
+//const int PoolTemp = A2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
 
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
@@ -46,10 +47,11 @@ void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
   isConnected = false;
+  /*
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-
+  */
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
@@ -79,6 +81,7 @@ void setup() {
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
   Serial.println("");
   Serial.println("Press 0 to Display Command Menu");
+  
   poolSensor.begin();
   //Start the I2C interface
   Wire.begin(SLAVE_ADDRESS);
@@ -96,19 +99,24 @@ void DebugMessage(String msg)
 }
 
 /*
- * Get the local temperature in Farenheit
+ * Get the local/outside temperature in Farenheit
  * the DHT Module returns the temp in Celsius.
  */
 double GetLocalTemp()
 {
-  DHT.read11(dht_apin);
+  DHT.read11(OutsideTemp);
   return (DHT.temperature * 9/5) + 32;
 }
 
+/*
+ * Get the temperature in the pool with the water proof sensor
+ */
 double GetPoolTemp()
 {
   poolSensor.requestTemperatures();
   return poolSensor.getTempFByIndex(0);
+  //DHT.read11(PoolTemp);
+  //return (DHT.temperature * 9/5) + 32;
 }
 
 /*
@@ -204,6 +212,9 @@ void doWebPage()
   }
 }
 
+/*
+ * Main Function
+ */
 void loop() {
   doWebPage();
   if (Serial.available())
@@ -236,6 +247,9 @@ void printWifiStatus() {
   Serial.println(" dBm");
 }
 
+/*
+ * Serial Monitor
+ */
 void printMenu()
 {
   Serial.println("");
@@ -252,6 +266,10 @@ void printMenu()
   Serial.println("6.) pH Cal Clear");
   Serial.println("0.) Show Menu");
 }
+
+/*
+ * Menu to help calibrate the ph monitor
+ */
 void menuExec(char value)
 { 
   switch(value)
@@ -290,7 +308,9 @@ void menuExec(char value)
         break;
   }
 }
-
+/*
+ * Dallas Temperatore Request Handler
+ */
 void requestEvent() {
   //sends data over I2C in the format "88.99|78.12|100.00" where "PoolTemp|SolarTemp|OutsideTemp"
   temperatureData.toCharArray(data,I2C_BUFFER_LEN);
