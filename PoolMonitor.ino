@@ -13,9 +13,10 @@ char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 bool isConnected;                           //marker to toggle the connection for serial diagnostics
-#define OutsideTemp A0                         // Analog Pin sensor is connected to
+bool useWifi=false;                         //Enabled or disable the wifi functionality and the webpage
+#define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
-const int PoolTemp = 2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
+const int PoolTemp = 2;                     //Assigned Pool monitor A2 to the Water proof temperature sensor
 
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
@@ -44,6 +45,18 @@ WiFiServer server(80);                      //The port to open up the web server
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
+  if (useWifi)
+  {
+    InitWifi();
+    printWifiStatus();  
+  }
+  
+  SetupPH();
+  SetupDallasTempMonitor();
+}
+
+void InitWifi()
+{
   isConnected = false;
 
   // check for the WiFi module:
@@ -70,11 +83,6 @@ void setup() {
   }
   server.begin();
   // you're connected now, so print out the status:
-  
-  printWifiStatus();
-
-  SetupPH();
-  SetupDallasTempMonitor();
 }
 
 /*
@@ -126,7 +134,6 @@ double GetPoolTemp()
 {
   poolSensor.requestTemperatures();
   double temp = poolSensor.getTempFByIndex(0);
-  Serial.println(temp);
   return temp;
   //DHT.read11(PoolTemp);
   //return (DHT.temperature * 9/5) + 32;
@@ -229,14 +236,16 @@ void doWebPage()
  * Main Function
  */
 void loop() {
-  doWebPage();
+  if (useWifi)
+  {
+      doWebPage(); 
+  }
+ 
   if (Serial.available())
   {
     char value = Serial.read();           //read the string until we see a <CR>  
     menuExec(value);
   }
-  //Serial.println(pH.read_ph());
-  //delay(1000);
 }
 
 /*
@@ -277,6 +286,9 @@ void printMenu()
   Serial.println("4.) pH Cal 7");
   Serial.println("5.) pH Cal 10");
   Serial.println("6.) pH Cal Clear");
+  Serial.println("o.) Show Outside Temp");
+  Serial.println("p.) Show Pool Temp");
+  Serial.println("h.) Show Outside Humidity");
   Serial.println("0.) Show Menu");
 }
 
@@ -315,6 +327,21 @@ void menuExec(char value)
         pH.cal_clear();                                 //call function for clearing calibration
         Serial.println("");
         Serial.println("CALIBRATION CLEARED");
+        break;
+    case 'o':
+        Serial.println("");
+        Serial.print("Outside Temp: ");
+        Serial.println(GetLocalTemp());
+        break;
+    case 'p':
+        Serial.println("");
+        Serial.print("Pool Temp: ");
+        Serial.println(GetPoolTemp());
+        break;
+    case 'h':
+        Serial.println("");
+        Serial.print("Outside humidity :");
+        Serial.println(DHT.humidity);
         break;
     case '0':
         printMenu();
