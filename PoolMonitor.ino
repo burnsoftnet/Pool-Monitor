@@ -14,9 +14,8 @@ char pass[] = SECRET_PASS;                  // your network password (use for WP
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 bool isConnected;                           //marker to toggle the connection for serial diagnostics
 #define OutsideTemp A0                         // Analog Pin sensor is connected to
-#define PoolTemp A2
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
-//const int PoolTemp = A2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
+const int PoolTemp = 2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
 
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
@@ -86,8 +85,6 @@ void SetupPH()
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
   Serial.println("");
   Serial.println("Press 0 to Display Command Menu");
-  
-  poolSensor.begin();
 }
 
 /*
@@ -95,6 +92,7 @@ void SetupPH()
  */
 void SetupDallasTempMonitor()
 {
+  poolSensor.begin();
   //Start the I2C interface
   Wire.begin(SLAVE_ADDRESS);
   Wire.onRequest(requestEvent);
@@ -127,7 +125,9 @@ double GetLocalTemp()
 double GetPoolTemp()
 {
   poolSensor.requestTemperatures();
-  return poolSensor.getTempFByIndex(0);
+  double temp = poolSensor.getTempFByIndex(0);
+  Serial.println(temp);
+  return temp;
   //DHT.read11(PoolTemp);
   //return (DHT.temperature * 9/5) + 32;
 }
@@ -170,7 +170,7 @@ void DoWebpage()
           client.print("Pool Temperature:  </td>");
           client.print(" <td>");
           client.print(GetPoolTemp());
-          client.println(" degrees </td>");
+          client.println(" F </td>");
           client.println("</tr>");
           client.println("<tr>");
           client.println("<td>");
