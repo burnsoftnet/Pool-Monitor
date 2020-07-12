@@ -6,6 +6,7 @@
 #include "dht.h"
 #include "ph_grav.h"  
 #include "arduino_secrets.h" 
+#define SLAVE_ADDRESS 0x40 
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;                  // your network SSID (name)
@@ -16,8 +17,18 @@ bool isConnected;                           //marker to toggle the connection fo
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = A2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
 
+//Define the length of our buffer for the I2C interface
+const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
+
 //Load OneWire - proprietary dallas semiconductor sensor protocol - no license required
-OneWire outsideTemp(PoolTemp);
+OneWire poolTemp(PoolTemp);
+
+//Load Dallas - proprietary dallas sensor protocol utilizing onewire - no license required
+DallasTemperature poolSensor(&poolTemp);
+
+//Define I2C buffer
+char data[I2C_BUFFER_LEN];
+String temperatureData;
 
 dht DHT;
 String inputstring = "";                    //a string to hold incoming data from the PC
@@ -68,6 +79,10 @@ void setup() {
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
   Serial.println("");
   Serial.println("Press 0 to Display Command Menu");
+  poolSensor.begin();
+  //Start the I2C interface
+  Wire.begin(SLAVE_ADDRESS);
+  Wire.onRequest(requestEvent);
 }
 /*
  * Print debug messages to the serial output
@@ -92,7 +107,8 @@ double GetLocalTemp()
 
 double GetPoolTemp()
 {
-  return 0;
+  poolSensor.requestTemperatures();
+  return poolSensor.getTempFByIndex(0);
 }
 
 /*
@@ -273,4 +289,10 @@ void menuExec(char value)
         printMenu();
         break;
   }
+}
+
+void requestEvent() {
+  //sends data over I2C in the format "88.99|78.12|100.00" where "PoolTemp|SolarTemp|OutsideTemp"
+  temperatureData.toCharArray(data,I2C_BUFFER_LEN);
+  Wire.write(data);
 }
