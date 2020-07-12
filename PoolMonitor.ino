@@ -8,22 +8,28 @@
 #include "arduino_secrets.h" 
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-char ssid[] = SECRET_SSID;        // your network SSID (name)
-char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
-int keyIndex = 0;                 // your network key Index number (needed only for WEP)
-bool isConnected;             //marker to toggle the connection for serial diagnostics
-#define dht_apin A0 // Analog Pin sensor is connected to
-Gravity_pH pH = A1;                                   //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
+char ssid[] = SECRET_SSID;                  // your network SSID (name)
+char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
+int keyIndex = 0;                           // your network key Index number (needed only for WEP)
+bool isConnected;                           //marker to toggle the connection for serial diagnostics
+#define dht_apin A0                         // Analog Pin sensor is connected to
+Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
+const int PoolTemp = A2;                    //Assigned Pool monitor A2 to the Water proof temperature sensor
+
+//Load OneWire - proprietary dallas semiconductor sensor protocol - no license required
+OneWire outsideTemp(PoolTemp);
+
 dht DHT;
-String inputstring = "";   //a string to hold incoming data from the PC
-boolean input_string_complete = false;                //a flag to indicate have we received all the data from the PC
-char inputstring_array[10];                           //a char array needed for string parsing
+String inputstring = "";                    //a string to hold incoming data from the PC
+boolean input_string_complete = false;      //a flag to indicate have we received all the data from the PC
+char inputstring_array[10];                 //a char array needed for string parsing
 bool buggerme = true;
 WiFiClient client;
 
-int status = WL_IDLE_STATUS;
+//TO DELETE - Might No Need any more
+int status = WL_IDLE_STATUS;  
 
-WiFiServer server(80);
+WiFiServer server(80);                      //The port to open up the web server on the wifi
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -84,6 +90,11 @@ double GetLocalTemp()
   return (DHT.temperature * 9/5) + 32;
 }
 
+double GetPoolTemp()
+{
+  return 0;
+}
+
 /*
  * Print ouot the webpage, close connection after the 
  * completion of the response and refresh every 5 seconds
@@ -120,7 +131,8 @@ void DoWebpage()
           client.println("<tr>");
           client.print("<td>");
           client.print("Pool Temperature:  </td>");
-          client.print(" <td>Fucking Cold!");
+          client.print(" <td>");
+          client.print(GetPoolTemp());
           client.println(" degrees </td>");
           client.println("</tr>");
           client.println("<tr>");
