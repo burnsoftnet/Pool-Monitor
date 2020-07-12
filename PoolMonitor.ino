@@ -38,7 +38,6 @@ dht DHT;
 bool buggerme = true;
 WiFiClient client;
 
-//TO DELETE - Might No Need any more
 int status = WL_IDLE_STATUS;  
 
 WiFiServer server(80);                      //The port to open up the web server on the wifi
@@ -47,11 +46,7 @@ void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
   isConnected = false;
-  /*
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  */
+
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
@@ -83,6 +78,9 @@ void setup() {
   SetupDallasTempMonitor();
 }
 
+/*
+ * pH MOnitor Setup Function
+ */
 void SetupPH()
 {
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
@@ -92,6 +90,9 @@ void SetupPH()
   poolSensor.begin();
 }
 
+/*
+ * Dallas Temperature Setup Function
+ */
 void SetupDallasTempMonitor()
 {
   //Start the I2C interface
