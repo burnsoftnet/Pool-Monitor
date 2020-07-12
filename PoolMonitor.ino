@@ -1,3 +1,15 @@
+/*
+ * Arduino Project to monitor PH and Temperature as well as outside temperature. 
+ * This project is put together from other Arduino Projects as well as some custom 
+ * stuff that was lacking in the other projects, or at least didn't function the way 
+ * i needed it to
+ * 
+ * Repo: https://github.com/burnsoftnet/Pool-Monitor
+ * 
+ * Developer: Joe M.
+ * Version 1.0.0.0
+ */
+
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <OneWire.h>
