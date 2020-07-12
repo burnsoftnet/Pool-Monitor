@@ -1,2 +1,2 @@
-#define SECRET_SSID "bswifi_5g"
-#define SECRET_PASS "alpha900"
+#define SECRET_SSID ""
+#define SECRET_PASS ""
