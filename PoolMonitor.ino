@@ -62,6 +62,7 @@ void setup() {
   
   SetupPH();
   SetupDallasTempMonitor();
+  Serial.println("Press 0 to Display Command Menu");
 }
 
 /*
@@ -104,7 +105,6 @@ void SetupPH()
 {
   if (pH.begin()) { Serial.println("Loaded EEPROM");} 
   Serial.println("");
-  Serial.println("Press 0 to Display Command Menu");
 }
 
 /*
@@ -147,8 +147,6 @@ double GetPoolTemp()
   poolSensor.requestTemperatures();
   double temp = poolSensor.getTempFByIndex(0);
   return temp;
-  //DHT.read11(PoolTemp);
-  //return (DHT.temperature * 9/5) + 32;
 }
 
 /*
@@ -157,14 +155,15 @@ double GetPoolTemp()
  */
 void DoWebpage()
 {
-          String request = client.readStringUntil('\r');
-          Serial.println(request);
+          //String request = client.readStringUntil('\n');
+          //Serial.print("New Client Request!  ");
+          //Serial.println(request);
 
           
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  
-          client.println("Refresh: 5"); 
+          client.println("Refresh: 30"); 
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
@@ -213,7 +212,7 @@ void doWebPage()
 {
   client = server.available();
   if (client) {
-    Serial.println("new client");
+    //Serial.println("new client");
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     while (client.connected()) {
