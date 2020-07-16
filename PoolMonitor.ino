@@ -7,7 +7,7 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 1.0.0.1
+ * Version 1.0.0.0
  */
 
 #include <SPI.h>
@@ -29,7 +29,7 @@ bool useWifi=true;                         //Enabled or disable the wifi functio
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = 2;                     //Assigned Pool monitor A2 to the Water proof temperature sensor
-bool buggerme = true;                       //Toggle Mesages and Serial Prints
+
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
 
@@ -44,6 +44,7 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 
 dht DHT;
+bool buggerme = true;
 WiFiClient client;
 
 int status = WL_IDLE_STATUS;  
@@ -72,20 +73,20 @@ void InitWifi()
 
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
-    DebugMessage("Communication with WiFi module failed!");
+    Serial.println("Communication with WiFi module failed!");
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
-    DebugMessage("Please upgrade the firmware");
+    Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    DebugMsg("Attempting to connect to SSID: ");
-    DebugMessage(ssid);
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
 
@@ -101,9 +102,9 @@ void InitWifi()
  */
 void SetupPH()
 {
-  if (pH.begin()) { DebugMessage("Loaded EEPROM");} 
-  DebugMessage("");
-  DebugMessage("Press 0 to Display Command Menu");
+  if (pH.begin()) { Serial.println("Loaded EEPROM");} 
+  Serial.println("");
+  Serial.println("Press 0 to Display Command Menu");
 }
 
 /*
@@ -124,21 +125,7 @@ void DebugMessage(String msg)
 {
   if (buggerme)
   {
-    if (Serial.available())
-    {
-      Serial.println(msg); 
-    }
-  }
-}
-
-void DebugMsg(String msg)
-{
-  if (buggerme)
-  {
-    if (Serial.available())
-    {
-      Serial.print(msg);  
-    }
+    Serial.println(msg);
   }
 }
 
@@ -171,7 +158,7 @@ double GetPoolTemp()
 void DoWebpage()
 {
           String request = client.readStringUntil('\r');
-          DebugMessage(request);
+          Serial.println(request);
 
           
           client.println("HTTP/1.1 200 OK");
@@ -226,7 +213,7 @@ void doWebPage()
 {
   client = server.available();
   if (client) {
-    DebugMessage("new client");
+    Serial.println("new client");
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     while (client.connected()) {
@@ -251,11 +238,11 @@ void doWebPage()
     delay(5000);
     // close the connection:
     client.stop();
-    DebugMessage("client disconnected");
+    Serial.println("client disconnected");
   }
   if (!isConnected)
   {
-    DebugMessage("Not Connected");
+    Serial.println("Not Connected");
     delay(200);
   }
 }
@@ -283,18 +270,18 @@ void loop() {
 void printWifiStatus() {
   
   isConnected = true;
-  DebugMsg("SSID: ");
-  DebugMessage(WiFi.SSID());
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
 
   IPAddress ip = WiFi.localIP();
-  DebugMsg("IP Address: ");
-  DebugMessage((String)ip);
+  Serial.print("IP Address: ");
+  Serial.println(ip);
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
-  DebugMsg("signal strength (RSSI):");
-  DebugMsg((String)rssi);
-  DebugMessage(" dBm");
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
 }
 
 /*
@@ -302,22 +289,22 @@ void printWifiStatus() {
  */
 void printMenu()
 {
-  DebugMessage("");
-  DebugMessage("POOL MONITOR");
-  DebugMessage("---------------------");
-  DebugMessage("");
-  DebugMessage("Send the number of the command you want to execute");
-  DebugMessage("");
-  DebugMessage("1.) Show Wifi");
-  DebugMessage("2.) Show Ph");
-  DebugMessage("3.) pH Cal 4");
-  DebugMessage("4.) pH Cal 7");
-  DebugMessage("5.) pH Cal 10");
-  DebugMessage("6.) pH Cal Clear");
-  DebugMessage("o.) Show Outside Temp");
-  DebugMessage("p.) Show Pool Temp");
-  DebugMessage("h.) Show Outside Humidity");
-  DebugMessage("0.) Show Menu");
+  Serial.println("");
+  Serial.println("POOL MONITOR");
+  Serial.println("---------------------");
+  Serial.println("");
+  Serial.println("Send the number of the command you want to execute");
+  Serial.println("");
+  Serial.println("1.) Show Wifi");
+  Serial.println("2.) Show Ph");
+  Serial.println("3.) pH Cal 4");
+  Serial.println("4.) pH Cal 7");
+  Serial.println("5.) pH Cal 10");
+  Serial.println("6.) pH Cal Clear");
+  Serial.println("o.) Show Outside Temp");
+  Serial.println("p.) Show Pool Temp");
+  Serial.println("h.) Show Outside Humidity");
+  Serial.println("0.) Show Menu");
 }
 
 /*
@@ -328,48 +315,48 @@ void menuExec(char value)
   switch(value)
   {
     case '1':
-        DebugMessage("");
+        Serial.println("");
         printWifiStatus();
         break;
     case '2':
-       DebugMessage("");
-       DebugMessage("pH Reading is:");
-       DebugMessage((String)pH.read_ph());
+       Serial.println("");
+       Serial.println("pH Reading is:");
+       Serial.println(pH.read_ph());
        break;
     case '3':
         pH.cal_low();                                   //call function for low point calibration
-        DebugMessage("");
-        DebugMessage("LOW CALIBRATED");
+        Serial.println("");
+        Serial.println("LOW CALIBRATED");
         break;
     case '4':
         pH.cal_mid();                                   //call function for midpoint calibration
-        DebugMessage("");
-        DebugMessage("MID CALIBRATED");
+        Serial.println("");
+        Serial.println("MID CALIBRATED");
         break;
     case '5':
         pH.cal_high();                                  //call function for highpoint calibration
-        DebugMessage("");
-        DebugMessage("HIGH CALIBRATED");
+        Serial.println("");
+        Serial.println("HIGH CALIBRATED");
         break;
     case '6':
         pH.cal_clear();                                 //call function for clearing calibration
-        DebugMessage("");
-        DebugMessage("CALIBRATION CLEARED");
+        Serial.println("");
+        Serial.println("CALIBRATION CLEARED");
         break;
     case 'o':
-        DebugMessage("");
-        DebugMsg("Outside Temp: ");
-        DebugMessage((String)GetLocalTemp());
+        Serial.println("");
+        Serial.print("Outside Temp: ");
+        Serial.println(GetLocalTemp());
         break;
     case 'p':
-        DebugMessage("");
-        DebugMsg("Pool Temp: ");
-        DebugMessage((String)GetPoolTemp());
+        Serial.println("");
+        Serial.print("Pool Temp: ");
+        Serial.println(GetPoolTemp());
         break;
     case 'h':
-        DebugMessage("");
-        DebugMsg("Outside humidity :");
-        DebugMessage((String)DHT.humidity);
+        Serial.println("");
+        Serial.print("Outside humidity :");
+        Serial.println(DHT.humidity);
         break;
     case '0':
         printMenu();
