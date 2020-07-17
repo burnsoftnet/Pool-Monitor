@@ -24,11 +24,16 @@
 char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
-bool isConnected;                           //marker to toggle the connection for serial diagnostics
-bool useWifi=true;                         //Enabled or disable the wifi functionality and the webpage
+int webRefresh = 30;                        // Web Refresh interval
+bool isConnected;                           // marker to toggle the connection for serial diagnostics
+bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
+bool GetLocalTemp=true;                     // Report back the Outside Local Temperature
+bool GetPoolTemp=true;                      // Report back on the Pool Temperature
+bool GetpH=true;                            // Report back on the pH; 
+bool buggerme = false;                       // Enabled Debug Messages
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
-Gravity_pH pH = A1;                         //assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
-const int PoolTemp = 2;                     //Assigned Pool monitor A2 to the Water proof temperature sensor
+Gravity_pH pH = A1;                         // assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
+const int PoolTemp = 2;                     // Assigned Pool monitor A2 to the Water proof temperature sensor
 
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
@@ -44,7 +49,6 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 
 dht DHT;
-bool buggerme = true;
 WiFiClient client;
 
 int status = WL_IDLE_STATUS;  
@@ -148,7 +152,61 @@ double GetPoolTemp()
   double temp = poolSensor.getTempFByIndex(0);
   return temp;
 }
-
+/*
+ * Print out the local/outside temperature and humity in the webpage
+ */
+void WebPage_LocalTemp()
+{
+  if (GetLocalTemp)
+  {
+    client.println("<tr>");
+    client.print("<td>");
+    client.print("Outside Temperature </td>");
+    client.print("<td>");
+    client.print(GetLocalTemp());
+    client.println(" F </td>");
+    client.println("</tr>");
+    client.println("<tr>");
+    client.print("<td>");
+    client.print("Outside Humidity </td>");
+    client.print("<td>");
+    client.print(DHT.humidity);
+    client.println(" % </td>");
+    client.println("</tr>");
+  }
+}
+/*
+ * Print out the Pool Temperature for the Web Page
+ */
+void WebPage_PoolTemp()
+{
+  if (GetPoolTemp)
+  {
+    client.println("<tr>");
+          client.print("<td>");
+          client.print("Pool Temperature:  </td>");
+          client.print(" <td>");
+          client.print(GetPoolTemp());
+          client.println(" F </td>");
+          client.println("</tr>");
+  }
+}
+/*
+ * Print out the Ph Table Row
+ */
+void WebPage_pH()
+{
+  if (GetpH)
+  {
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("Ph Level:  </td>");
+    client.print("<td>");
+    client.print(pH.read_ph());
+    client.println("</td>");
+    client.println("</tr>");
+  }
+}
 /*
  * Print ouot the webpage, close connection after the 
  * completion of the response and refresh every 5 seconds
@@ -163,7 +221,7 @@ void DoWebpage()
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  
-          client.println("Refresh: 30"); 
+          client.println("Refresh: " + webRefresh); 
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
@@ -172,34 +230,9 @@ void DoWebpage()
           client.println("<b><h1>Pool Temperature</h1></b>");
           client.println("</br>");
           client.println("<table border=1>");
-          client.println("<tr>");
-          client.print("<td>");
-          client.print("Outside Temperature </td>");
-          client.print("<td>");
-          client.print(GetLocalTemp());
-          client.println(" F </td>");
-          client.println("</tr>");
-          client.println("<tr>");
-          client.print("<td>");
-          client.print("Outside Humidity </td>");
-          client.print("<td>");
-          client.print(DHT.humidity);
-          client.println(" % </td>");
-          client.println("</tr>");
-          client.println("<tr>");
-          client.print("<td>");
-          client.print("Pool Temperature:  </td>");
-          client.print(" <td>");
-          client.print(GetPoolTemp());
-          client.println(" F </td>");
-          client.println("</tr>");
-          client.println("<tr>");
-          client.println("<td>");
-          client.print("Ph Level:  </td>");
-          client.print("<td>");
-          client.print(pH.read_ph());
-          client.println("</td>");
-          client.println("</tr>");
+          WebPage_LocalTemp();
+          WebPage_PoolTemp();
+          WebPage_pH();
           client.println("</table>");
           client.println("<center>");
           client.println("</html>");
