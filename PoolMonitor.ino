@@ -27,8 +27,8 @@ int keyIndex = 0;                           // your network key Index number (ne
 int webRefresh = 30;                        // Web Refresh interval
 bool isConnected;                           // marker to toggle the connection for serial diagnostics
 bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
-bool GetLocalTemp=true;                     // Report back the Outside Local Temperature
-bool GetPoolTemp=true;                      // Report back on the Pool Temperature
+bool _getOutsideTemp=true;                     // Report back the Outside Local Temperature
+bool _getPoolTemp=true;                      // Report back on the Pool Temperature
 bool GetpH=true;                            // Report back on the pH; 
 bool buggerme = false;                       // Enabled Debug Messages
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
@@ -157,7 +157,7 @@ double GetPoolTemp()
  */
 void WebPage_LocalTemp()
 {
-  if (GetLocalTemp)
+  if (_getOutsideTemp)
   {
     client.println("<tr>");
     client.print("<td>");
@@ -180,15 +180,15 @@ void WebPage_LocalTemp()
  */
 void WebPage_PoolTemp()
 {
-  if (GetPoolTemp)
+  if (_getPoolTemp)
   {
     client.println("<tr>");
-          client.print("<td>");
-          client.print("Pool Temperature:  </td>");
-          client.print(" <td>");
-          client.print(GetPoolTemp());
-          client.println(" F </td>");
-          client.println("</tr>");
+    client.print("<td>");
+    client.print("Pool Temperature:  </td>");
+    client.print(" <td>");
+    client.print(GetPoolTemp());
+    client.println(" F </td>");
+    client.println("</tr>");
   }
 }
 /*
@@ -213,29 +213,29 @@ void WebPage_pH()
  */
 void DoWebpage()
 {
-          //String request = client.readStringUntil('\n');
-          //Serial.print("New Client Request!  ");
-          //Serial.println(request);
+    //String request = client.readStringUntil('\n');
+    //Serial.print("New Client Request!  ");
+    //Serial.println(request);
 
-          
-          client.println("HTTP/1.1 200 OK");
-          client.println("Content-Type: text/html");
-          client.println("Connection: close");  
-          client.println("Refresh: " + webRefresh); 
-          client.println();
-          client.println("<!DOCTYPE HTML>");
-          client.println("<html>");
-          //client.println("");
-          client.println("<center>");
-          client.println("<b><h1>Pool Temperature</h1></b>");
-          client.println("</br>");
-          client.println("<table border=1>");
-          WebPage_LocalTemp();
-          WebPage_PoolTemp();
-          WebPage_pH();
-          client.println("</table>");
-          client.println("<center>");
-          client.println("</html>");
+    
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html");
+    client.println("Connection: close");  
+    client.println("Refresh: " + webRefresh); 
+    client.println();
+    client.println("<!DOCTYPE HTML>");
+    client.println("<html>");
+    //client.println("");
+    client.println("<center>");
+    client.println("<b><h1>Pool Temperature</h1></b>");
+    client.println("</br>");
+    client.println("<table border=1>");
+    WebPage_LocalTemp();
+    WebPage_PoolTemp();
+    WebPage_pH();
+    client.println("</table>");
+    client.println("<center>");
+    client.println("</html>");
 }
 
 /*
