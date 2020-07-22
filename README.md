@@ -25,10 +25,12 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 
 - 1 x Arduino UNO Wifi
 - 2 x E-Projects 10EP5144K70 4.7k Ohm Resistors, 1/4 W, 5% (Pack of 10) (https://www.amazon.com/E-Projects-4-7k-Resistors-Watt-Pieces/dp/B00EV20PF8/ref=sr_1_5?ie=UTF8&qid=1442521134&sr=8-5&keywords=4.7k+resistor&pldnSite=1)
-- 1 x Digital Temperature Humidity Sensor Module
+- 1 x HiLetgo 5pcs DHT11 Temperature Humidity Sensor Module Digital Temperature Humidity Sensor 3.3V-5V Humidity Measure Range 20%-95% Temperature Measure Range 0-50℃ Celsius with Dupont Wires ( https://www.amazon.com/gp/product/B01DKC2GQ0/ref=ppx_yo_dt_b_asin_title_o02_s01?ie=UTF8&psc=1 )
 - 1 x Consumer Grade pH Probe ( https://atlas-scientific.com/probes/consumer-grade-ph-probe/ )
-- 1 x Gravity™ Analog pH Sensor / Meter ( https://atlas-scientific.com/circuits/gravity-analog-ph-sensor-meter/ )
-- 1x LeMotech Waterproof Dustproof IP65 ABS Plastic Junction Box Universal Electric Project Enclosure Pale Gray 7.9 x 4.7 x 2.95 inch(200 x 120 x 75 mm ( https://www.amazon.com/LeMotech-Waterproof-Dustproof-Universal-Enclosure/dp/B075X11CL6/ref=sr_1_7?dchild=1&keywords=Pinfox%2BWaterproof%2BElectronic%2BABS%2BPlastic%2BJunction%2BProject%2BBox%2BEnclosure%2B200mm%2Bby%2B120mm%2Bby%2B75&qid=1594926417&sr=8-7&th=1 ) **NOTE: Any water proof container that can hold everything will work.**
+- 1 x Gratury Junction Box, Hinged Transparent Cover Stainless Steel Clip IP67 Waterproof Plastic Enclosure for Electrical Project Includes Mounting Plate and Wall Bracket 220×170×110mm (8.6"×6.7"×4.3" TC)( https://www.amazon.com/gp/product/B0828387BM/ref=ppx_yo_dt_b_asin_title_o09_s00?ie=UTF8&psc=1 ) 
+- Sunnytech 1pc 3w 9v 333ma Mini Solar Panel Module Solar System Solar Epoxy Cell Charger DIY B043 ( https://www.amazon.com/gp/product/B00P4W9UE6/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1 )
+- DFROBOT 900mA MPPT Solar Panel Controller - Solar Power Manager Module for 5V Solar Panel - Support Solar and USB Charging ( https://www.amazon.com/gp/product/B07MML4YJV/ref=ppx_yo_dt_b_asin_title_o04_s01?ie=UTF8&psc=1 )
+- 4pcs 3.7V 1100mAh Lithium Rechargable Battery 1S 3C Lipo Battery with Protection Board, Insulated Rubber Tape and Micro JST 1.25 Plug for Arduino Nodemcu ESP32 Development Board ( https://www.amazon.com/gp/product/B0867KDMY7/ref=ppx_yo_dt_b_asin_title_o04_s02?ie=UTF8&psc=1 )
 
 
 ## APPS AND ONLINE SERVICES
