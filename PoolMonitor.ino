@@ -18,22 +18,26 @@
 #include "dht.h"
 #include "ph_grav.h"  
 #include "arduino_secrets.h" 
+#include "VoltMeter.h"
+
 #define SLAVE_ADDRESS 0x40 
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
-int webRefresh = 30;                        // Web Refresh interval
+int webRefresh = 60;                        // Web Refresh interval
 bool isConnected;                           // marker to toggle the connection for serial diagnostics
 bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
 bool _getOutsideTemp=true;                     // Report back the Outside Local Temperature
 bool _getPoolTemp=true;                      // Report back on the Pool Temperature
 bool GetpH=true;                            // Report back on the pH; 
+bool GetVm=true;                            // Report back on the battery voltage
 bool buggerme = false;                       // Enabled Debug Messages
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         // assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = 2;                     // Assigned Pool monitor A2 to the Water proof temperature sensor
+const int VoltMeter = 2;                     // Volt meter input
 
 //Define the length of our buffer for the I2C interface
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
@@ -49,6 +53,8 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 
 dht DHT;
+voltmeter voltmeter;
+
 WiFiClient client;
 
 int status = WL_IDLE_STATUS;  
@@ -66,6 +72,10 @@ void setup() {
   
   SetupPH();
   SetupDallasTempMonitor();
+  if (GetVm)
+  {
+    pinMode(VoltMeter, INPUT);
+  }
   Serial.println("Press 0 to Display Command Menu");
 }
 
@@ -207,6 +217,21 @@ void WebPage_pH()
     client.println("</tr>");
   }
 }
+
+void WebPage_Voltage()
+{
+  if (GetVm)
+  {
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("Battery Voltage:  </td>");
+    client.print("<td>");
+    client.print(voltmeter.readVoltageIn(VoltMeter,0.90));
+    client.println(" vdc</td>");
+    client.println("</tr>");
+  }
+}
+
 /*
  * Print ouot the webpage, close connection after the 
  * completion of the response and refresh every 5 seconds
@@ -227,12 +252,13 @@ void DoWebpage()
     client.println("<html>");
     //client.println("");
     client.println("<center>");
-    client.println("<b><h1>Pool Temperature</h1></b>");
+    client.println("<b><h1>Pool Monitor</h1></b>");
     client.println("</br>");
     client.println("<table border=1>");
     WebPage_LocalTemp();
     WebPage_PoolTemp();
     WebPage_pH();
+    WebPage_Voltage();
     client.println("</table>");
     client.println("<center>");
     client.println("</html>");
