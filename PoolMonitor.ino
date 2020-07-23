@@ -226,7 +226,7 @@ void WebPage_Voltage()
     client.println("<td>");
     client.print("Battery Voltage:  </td>");
     client.print("<td>");
-    client.print(voltmeter.readVoltageIn(VoltMeter,0.90));
+    client.print(voltmeter.readVoltageIn(VoltMeter,0.90) / 11);
     client.println(" vdc</td>");
     client.println("</tr>");
   }
