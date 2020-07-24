@@ -42,6 +42,8 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 
 ![](Schematic/PoolMonitor.png)
 
+The Solar module and panel was added in version 2 along with a volt meter to monitor the battery status.  The Volt meter circuit has an on and off switch in case you needed to reboot everything without having to take a screw driver to it.  The Volt meter is independent and does not have to be hooked up to the Arduino, it will still pass the needed voltage to the solar module with the option to monitor the voltage from the mater.  Dis can also be disabled in the code by setting the GetVm to false.
+
 ## Web UI
 
 There is nothing much to the web ui, it will just display the outside temperature, the outside humidity, the pool temperature and the pH Level.
