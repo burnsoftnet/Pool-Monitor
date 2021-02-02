@@ -239,7 +239,7 @@ void WebPage_Voltage()
  * Print ouot the webpage, close connection after the 
  * completion of the response and refresh every 5 seconds
  */
-void DoWebpage()
+void DoWebpageContent()
 {
     //String request = client.readStringUntil('\n');
     //Serial.print("New Client Request!  ");
@@ -287,10 +287,7 @@ void DoPhCalibrationWeb()
     client.println("<b><h1>ph Calibration</h1></b>");
     client.println("</br>");
     client.println("<table border=1>");
-    WebPage_LocalTemp();
-    WebPage_PoolTemp();
-    WebPage_pH();
-    WebPage_Voltage();
+
     client.println("</table>");
     client.println("<center>");
     client.println("</html>");
@@ -303,16 +300,23 @@ void doWebPage()
 {
   client = server.available();
   if (client) {
+    
     //Serial.println("new client");
     // an http request ends with a blank line
+    String myRequest = "my request\n";
     boolean currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
+        myRequest.concat(c);
+        char *name = strtok(NULL,"=");
+        //Serial.write(name);
+        
         if (c == '\n' && currentLineIsBlank) {
           // send a standard http response header
-          DoWebpage();
+          Serial.println(myRequest);
+          DoWebpageContent();
           break;
         }
         if (c == '\n') {
