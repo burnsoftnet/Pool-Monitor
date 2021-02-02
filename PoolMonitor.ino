@@ -10,7 +10,7 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 1.0.0.1
+ * Version 1.0.0.2
  */
 
 #include <SPI.h>
@@ -79,7 +79,7 @@ void setup() {
   {
     pinMode(VoltMeter, INPUT);
   }
-  Serial.println("Press 0 to Display Command Menu");
+  Serial.println("Press ? to Display Command Menu");
 }
 
 /*
@@ -236,16 +236,11 @@ void WebPage_Voltage()
 }
 
 /*
- * Print ouot the webpage, close connection after the 
+ * Print out the webpage, close connection after the 
  * completion of the response and refresh every 5 seconds
  */
 void DoWebpageContent()
 {
-    //String request = client.readStringUntil('\n');
-    //Serial.print("New Client Request!  ");
-    //Serial.println(request);
-
-    
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Connection: close");  
@@ -253,7 +248,6 @@ void DoWebpageContent()
     client.println();
     client.println("<!DOCTYPE HTML>");
     client.println("<html>");
-    //client.println("");
     client.println("<center>");
     client.println("<b><h1>Pool Monitor</h1></b>");
     client.println("</br>");
@@ -263,32 +257,89 @@ void DoWebpageContent()
     WebPage_pH();
     WebPage_Voltage();
     client.println("</table>");
+    client.println("</br>");
+    client.println("<a href=\"/cal\">Click here to calibrate pH</a>");
     client.println("<center>");
     client.println("</html>");
 }
 
+/*
+ * Print out the Web Page menu for the pH Calibration Section
+ */
 void DoPhCalibrationWeb()
 {
-    //String request = client.readStringUntil('\n');
-    //Serial.print("New Client Request!  ");
-    //Serial.println(request);
-
-    
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Connection: close");  
-    client.println("Refresh: " + webRefresh); 
     client.println();
     client.println("<!DOCTYPE HTML>");
     client.println("<html>");
-    //client.println("");
     client.println("<center>");
     client.println("<b><h1>Pool Monitor</h1></b>");
     client.println("<b><h1>ph Calibration</h1></b>");
     client.println("</br>");
     client.println("<table border=1>");
-
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("<a href=\"/phCal4\">ph Cal 4</a></td>");
+    client.println("</tr>");
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("<a href=\"/phCal7\">ph Cal 7</a></td>");
+    client.println("</tr>");
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("<a href=\"/phCal10\">ph Cal 10</a></td>");
+    client.println("</tr>");
+    client.println("<tr>");
+    client.println("<td>");
+    client.print("<a href=\"/phCalClear\">ph Cal Clear</a></td>");
+    client.println("</tr>");
     client.println("</table>");
+    client.println("</br>");
+    client.println("</br>");
+    client.print("<a href=\"/\">Back To Main Menu</a>");
+    client.println("<center>");
+    client.println("</html>");
+}
+
+/*
+ * Print out the Webpage that will display that the low, mid or high clibration
+ * was performed with the option to head back to the calibration menu.
+ */
+void DoPhCalibrationWeb(int level)
+{
+    String LevelMarker = "";    
+    switch (level)
+    {
+      case 1:
+        pH.cal_low();
+        LevelMarker="ph Low Calibrated";
+        break;
+      case 2:
+        pH.cal_mid(); 
+        LevelMarker="ph Mid Calibrated";
+        break;
+      case 3:
+        pH.cal_high(); 
+        LevelMarker="ph High Calibrated";
+        break;
+      case 4:
+        pH.cal_clear();
+        LevelMarker="ph Calibration Cleared";
+        break;
+    }
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html");
+    client.println("Connection: close");  
+    client.println();
+    client.println("<!DOCTYPE HTML>");
+    client.println("<html>");
+    client.println("<center>");
+    client.println("<b><h1>" + LevelMarker + "</h1></b>");
+    client.println("<b>Completed!</b>");
+    client.println("</br>");
+    client.print("<a href=\"/cal\">Back</a>");
     client.println("<center>");
     client.println("</html>");
 }
@@ -301,6 +352,10 @@ void doWebPage()
   client = server.available();
   if (client) {
     boolean doCalibration = false;
+    bool doCal4 = false;
+    bool doCal7 = false;
+    bool doCal10 = false;
+    bool doCalClear = false;
     //Serial.println("new client");
     // an http request ends with a blank line
     String myRequest = "";
@@ -313,7 +368,27 @@ void doWebPage()
         //char *name = strtok(NULL,"=");
         //Serial.write(name);
 
-        if (myRequest == "GET /ph")
+        if (myRequest == "GET /phCal4")
+        {
+          doCal4 = true;
+        }
+
+        if (myRequest == "GET /phCal7")
+        {
+          doCal7 = true;
+        }
+
+        if (myRequest == "GET /phCal10")
+        {
+          doCal10 = true;
+        }
+
+        if (myRequest == "GET /phCalClear")
+        {
+          doCalClear = true;
+        }
+
+        if (myRequest == "GET /cal")
         {
           doCalibration = true;
         }
@@ -324,7 +399,21 @@ void doWebPage()
           if (doCalibration)
           {
             DoPhCalibrationWeb();
-          } else {
+          } else if (doCal4)
+          {
+            DoPhCalibrationWeb(1);
+          }else if (doCal7)
+          {
+            DoPhCalibrationWeb(2);
+          }else if (doCal10)
+          {
+            DoPhCalibrationWeb(3);
+          }else if (doCalClear)
+          {
+            DoPhCalibrationWeb(4);
+          }
+          else 
+          {
             DoWebpageContent();  
           }
           
@@ -463,7 +552,7 @@ void menuExec(char value)
         Serial.print("Outside humidity :");
         Serial.println(DHT.humidity);
         break;
-    case '0':
+    case '?':
         printMenu();
         break;
   }
