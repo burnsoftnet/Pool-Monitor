@@ -300,23 +300,34 @@ void doWebPage()
 {
   client = server.available();
   if (client) {
-    
+    boolean doCalibration = false;
     //Serial.println("new client");
     // an http request ends with a blank line
-    String myRequest = "my request\n";
+    String myRequest = "";
     boolean currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
         myRequest.concat(c);
-        char *name = strtok(NULL,"=");
+        //char *name = strtok(NULL,"=");
         //Serial.write(name);
+
+        if (myRequest == "GET /ph")
+        {
+          doCalibration = true;
+        }
         
         if (c == '\n' && currentLineIsBlank) {
           // send a standard http response header
-          Serial.println(myRequest);
-          DoWebpageContent();
+          //Serial.println(myRequest);
+          if (doCalibration)
+          {
+            DoPhCalibrationWeb();
+          } else {
+            DoWebpageContent();  
+          }
+          
           break;
         }
         if (c == '\n') {
