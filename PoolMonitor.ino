@@ -4,10 +4,13 @@
  * stuff that was lacking in the other projects, or at least didn't function the way 
  * i needed it to
  * 
+ * Registers Emulator: ATMEGA328
+ * Board: Arduino Uno Wifi Rev2
+ * 
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 1.0.0.0
+ * Version 1.0.0.1
  */
 
 #include <SPI.h>
@@ -253,6 +256,35 @@ void DoWebpage()
     //client.println("");
     client.println("<center>");
     client.println("<b><h1>Pool Monitor</h1></b>");
+    client.println("</br>");
+    client.println("<table border=1>");
+    WebPage_LocalTemp();
+    WebPage_PoolTemp();
+    WebPage_pH();
+    WebPage_Voltage();
+    client.println("</table>");
+    client.println("<center>");
+    client.println("</html>");
+}
+
+void DoPhCalibrationWeb()
+{
+    //String request = client.readStringUntil('\n');
+    //Serial.print("New Client Request!  ");
+    //Serial.println(request);
+
+    
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html");
+    client.println("Connection: close");  
+    client.println("Refresh: " + webRefresh); 
+    client.println();
+    client.println("<!DOCTYPE HTML>");
+    client.println("<html>");
+    //client.println("");
+    client.println("<center>");
+    client.println("<b><h1>Pool Monitor</h1></b>");
+    client.println("<b><h1>ph Calibration</h1></b>");
     client.println("</br>");
     client.println("<table border=1>");
     WebPage_LocalTemp();
