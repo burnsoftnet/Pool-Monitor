@@ -50,6 +50,10 @@ There is nothing much to the web ui, it will just display the outside temperatur
 
 ![](pictures/webui.png)
 
+pH Calibration Page
+
+![](pictures/webui_cal.png)
+
 ## End Product
 
 Version 2 of the finished project:
