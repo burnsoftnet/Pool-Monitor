@@ -10,7 +10,7 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 1.0.0.2
+ * Version 2.2.0.3
  */
 
 #include <SPI.h>
@@ -172,19 +172,34 @@ void WebPage_LocalTemp()
 {
   if (_getOutsideTemp)
   {
+    double oTemp = GetLocalTemp();
+    double oHum = DHT.humidity;
+    
     client.println("<tr>");
     client.print("<td>");
     client.print("Outside Temperature </td>");
     client.print("<td>");
-    client.print(GetLocalTemp());
-    client.println(" F </td>");
+    if (oTemp > 32)
+    {
+      client.print(oTemp);
+      client.println(" F </td>"); 
+    } else {
+      client.print("<font color=red>OFFLINE</font>");
+      client.println("</td>");
+    }
     client.println("</tr>");
     client.println("<tr>");
     client.print("<td>");
     client.print("Outside Humidity </td>");
     client.print("<td>");
-    client.print(DHT.humidity);
-    client.println(" % </td>");
+    if (oHum > 0) 
+    {
+      client.print(oHum);
+      client.println(" % </td>");  
+    } else {
+      client.print("<font color=red>OFFLINE</font>");
+      client.println("</td>");
+    }
     client.println("</tr>");
   }
 }
@@ -195,12 +210,20 @@ void WebPage_PoolTemp()
 {
   if (_getPoolTemp)
   {
+    double pTemp = GetPoolTemp();
+    
     client.println("<tr>");
     client.print("<td>");
     client.print("Pool Temperature:  </td>");
     client.print(" <td>");
-    client.print(GetPoolTemp());
-    client.println(" F </td>");
+    if (pTemp > 0)
+    {
+      client.print(pTemp);
+      client.println(" F </td>");  
+    } else {
+      client.print("<font color=red>OFFLINE</font>");
+      client.println("</td>");
+    }
     client.println("</tr>");
   }
 }
@@ -211,11 +234,39 @@ void WebPage_pH()
 {
   if (GetpH)
   {
+    float myPh = pH.read_ph();
+    
     client.println("<tr>");
     client.println("<td>");
     client.print("Ph Level:  </td>");
     client.print("<td>");
-    client.print(pH.read_ph());
+    if (myPh > 0 && myPh < 6)
+    {
+      client.print("<font color=darkyellow>");
+      client.print(myPh);
+      client.print("</font>");  
+    } else if (myPh > 6 && myPh < 8)
+    {
+      client.print("<font color=green>");
+      client.print(myPh);
+      client.print("</font>");
+    } else if (myPh > 8 && myPh < 10)
+    {
+      client.print("<font color=orange>");
+      client.print(myPh);
+      client.print("</font>");
+    } else if (myPh > 12 && myPh < 14 )
+    {
+      client.print("<font color=red>");
+      client.print(myPh);
+      client.print("</font>");
+    } else
+    {
+      client.print("<font color=red>");
+      client.print("OFFLINE");
+      client.print("</font>");
+    }
+    
     client.println("</td>");
     client.println("</tr>");
   }
@@ -225,12 +276,19 @@ void WebPage_Voltage()
 {
   if (GetVm)
   {
+    double volt = voltmeter.readVoltageIn(VoltMeter,0.90) / 11;
     client.println("<tr>");
     client.println("<td>");
     client.print("Battery Voltage:  </td>");
     client.print("<td>");
-    client.print(voltmeter.readVoltageIn(VoltMeter,0.90) / 11);
-    client.println(" vdc</td>");
+    if (volt > 0)
+    {
+      client.print(volt);
+      client.println(" vdc</td>"); 
+    } else {
+      client.print("<font color=red>OFFLINE</font>");
+      client.println("</td>");
+    }
     client.println("</tr>");
   }
 }
