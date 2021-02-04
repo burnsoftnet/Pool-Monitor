@@ -39,6 +39,8 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 - 1 x Waterproof Digital Temperature Sensor Single Line Smart Temperature Sensor Probe ( https://www.amazon.com/gp/product/B07VWTFZXC/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
 - 1 x uxcell 50 Pcs Red DIP Switch 1 Positions for Circuit Breadboards PCB ( https://www.amazon.com/gp/product/B07M9YJKQ6/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
 - 1 x PCB Board Prototype Board ( https://www.amazon.com/gp/product/B01N3161JP/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
+- 12 x Brass Standoff / Stainless Steel Screw Nut - Electronics-Salon Metric M2.5 Hex Male-Female Brass Standoff / Stainless Steel Screw Nut Assortment Kit, for Raspberry-Pi. Spacer 6mm 8mm 10mm 12mm 15mm 18mm 20mm 25mm, Nut M2.5, Screw M2.5 x 6mm.
+- Jumper Wires ( https://www.amazon.com/gp/product/B08151TQHG/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
 
 ## Build Cost
 
