@@ -10,7 +10,7 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 2.2.0.3
+ * Version 2.2.0.4
  */
 
 #include <SPI.h>
