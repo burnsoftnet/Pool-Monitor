@@ -16,3 +16,6 @@ xcuserdata
 # svn & cvs
 .svn
 CVS
+Schematic/Thumbs.db
+pictures/Thumbs.db
+Thumbs.db
