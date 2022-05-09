@@ -10,7 +10,7 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 3.0.0.0
+ * Version 3.0.0.5
  * Last Rev. Date: May 9th 2022
  */
 
@@ -64,7 +64,7 @@ DallasTemperature poolSensor(&poolTemp);
 //Define I2C buffer
 char data[I2C_BUFFER_LEN];
 String temperatureData;
-
+bool DisplayConnected;  // Switch to toggle functions for the LCD Screen if attached.
 dht DHT;
 voltmeter voltmeter;
 
@@ -77,17 +77,24 @@ WiFiServer server(80);                      //The port to open up the web server
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
+  DisplayConnected = true;
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
+    //for(;;);
+    DisplayConnected = false;
   }
-  delay(2000);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  display.println("Pool Monitor");
-  display.display(); 
+  
+  if (DisplayConnected)
+  {
+    delay(2000);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 10);
+    display.println("Pool Monitor");
+    display.display();   
+  }
+  
   if (useWifi)
   {
     InitWifi();
@@ -294,7 +301,9 @@ void WebPage_pH()
     client.println("</tr>");
   }
 }
-
+/*
+ * Display voltage of battery in webpage
+ */
 void WebPage_Voltage()
 {
   if (GetVm)
@@ -536,10 +545,15 @@ void loop() {
     char value = Serial.read();           //read the string until we see a <CR>  
     menuExec(value);
   }
-  PrintDisplay();
-  delay(500);
+  if (DisplayConnected)
+  {
+    PrintDisplay();
+    delay(500); 
+  }
 }
-
+/*
+ * Print information to the OLEd Screen
+ */
 void PrintDisplay()
 {
     double oTemp = GetLocalTemp();
