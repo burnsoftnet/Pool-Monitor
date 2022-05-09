@@ -546,10 +546,14 @@ void PrintDisplay()
     double oHum = DHT.humidity;
     double pTemp = GetPoolTemp();
     float myPh = pH.read_ph();
+    display.clearDisplay();
+    
+    display.setCursor(10, 0);
+    display.print("Pool Monitor");
     
     display.setCursor(0, 20);
     display.print("Outside Temp:");
-    if (oTemp > 0)
+    if (oTemp > 32)
     {
       display.println(oTemp);  
     } else {
@@ -561,7 +565,7 @@ void PrintDisplay()
     //display.display(); 
 
     display.setCursor(0, 30);
-    display.print("Outside humdity:");
+    display.print("Outside hum.:");
     if (oHum > 0)
     {
       display.println(oHum);
