@@ -34,12 +34,13 @@ char pass[] = SECRET_PASS;                  // your network password (use for WP
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 int webRefresh = 60;                        // Web Refresh interval
 bool isConnected;                           // marker to toggle the connection for serial diagnostics
-bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
+bool useWifi=false;                          // Enabled or disable the wifi functionality and the webpage
 bool _getOutsideTemp=true;                     // Report back the Outside Local Temperature
 bool _getPoolTemp=true;                      // Report back on the Pool Temperature
 bool GetpH=true;                            // Report back on the pH; 
 bool GetVm=true;                            // Report back on the battery voltage
 bool buggerme = false;                       // Enabled Debug Messages
+bool DisplayConnected = true;  // Switch to toggle functions for the LCD Screen if attached.
 #define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         // assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = 2;                     // Assigned Pool monitor A2 to the Water proof temperature sensor
@@ -64,7 +65,6 @@ DallasTemperature poolSensor(&poolTemp);
 //Define I2C buffer
 char data[I2C_BUFFER_LEN];
 String temperatureData;
-bool DisplayConnected;  // Switch to toggle functions for the LCD Screen if attached.
 dht DHT;
 voltmeter voltmeter;
 
@@ -77,11 +77,12 @@ WiFiServer server(80);                      //The port to open up the web server
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  DisplayConnected = true;
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
+  if (DisplayConnected)
+  {
+     if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
     Serial.println(F("SSD1306 allocation failed"));
-    //for(;;);
-    DisplayConnected = false;
+    for(;;);
+  } 
   }
   
   if (DisplayConnected)
