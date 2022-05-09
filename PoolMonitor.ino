@@ -47,6 +47,7 @@ const int VoltMeter = 2;                     // Volt meter input
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -75,7 +76,18 @@ WiFiServer server(80);                      //The port to open up the web server
 
 void setup() {
   //Initialize serial and wait for port to open:
-  Serial.begin(115200);
+  Serial.begin(9600);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+  delay(2000);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
+  display.println("Pool Monitor");
+  display.display(); 
   if (useWifi)
   {
     InitWifi();
@@ -88,17 +100,8 @@ void setup() {
   {
     pinMode(VoltMeter, INPUT);
   }
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  }
-  delay(2000);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  display.println("Hello, world!");
-  display.display(); 
+ 
+  
   Serial.println("Press ? to Display Command Menu");
 }
 
@@ -194,7 +197,7 @@ void WebPage_LocalTemp()
   {
     double oTemp = GetLocalTemp();
     double oHum = DHT.humidity;
-    
+  
     client.println("<tr>");
     client.print("<td>");
     client.print("Outside Temperature </td>");
@@ -533,6 +536,72 @@ void loop() {
     char value = Serial.read();           //read the string until we see a <CR>  
     menuExec(value);
   }
+  PrintDisplay();
+  delay(500);
+}
+
+void PrintDisplay()
+{
+    double oTemp = GetLocalTemp();
+    double oHum = DHT.humidity;
+    double pTemp = GetPoolTemp();
+    float myPh = pH.read_ph();
+    
+    display.setCursor(0, 20);
+    display.print("Outside Temp:");
+    if (oTemp > 0)
+    {
+      display.println(oTemp);  
+    } else {
+      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+      display.println("OFFLINE");
+      //display.setTextColor(SSD1306_WHITE);
+    }
+    
+    //display.display(); 
+
+    display.setCursor(0, 30);
+    display.print("Outside humdity:");
+    if (oHum > 0)
+    {
+      display.println(oHum);
+    } else {
+      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+      display.println("OFFLINE");
+      //display.setTextColor(SSD1306_WHITE); 
+    }
+     
+
+    display.setCursor(0, 40);
+    display.print("Pool Temp:");
+    display.println(pTemp);
+    
+    if (pTemp > 0)
+    {
+      //display.setTextColor(SSD1306_BLACK);
+      display.println(pTemp);  
+     // display.setTextColor(SSD1306_WHITE);
+    } else {
+      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+      display.println("OFFLINE");
+      //display.setTextColor(SSD1306_WHITE);
+    } 
+
+    display.setCursor(0, 50);
+    //display.setTextColor(BLUE);
+    display.print("Ph Level:");
+    //display.setTextColor(YELLOW);
+        if (myPh > 0 && myPh < 14)
+    {
+      //display.setTextColor(SSD1306_BLACK);
+      display.println(myPh);  
+    } else {
+      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+      display.println("OFFLINE");
+      //display.setTextColor(SSD1306_WHITE);
+    }
+    
+    display.display(); 
 }
 
 /*
