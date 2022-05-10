@@ -41,12 +41,15 @@ https://create.arduino.cc/projecthub/atlasscientific/diy-benchtop-ph-meter-e94fb
 - 1 x PCB Board Prototype Board ( https://www.amazon.com/gp/product/B01N3161JP/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
 - 12 x Brass Standoff / Stainless Steel Screw Nut - Electronics-Salon Metric M2.5 Hex Male-Female Brass Standoff / Stainless Steel Screw Nut Assortment Kit, for Raspberry-Pi. Spacer 6mm 8mm 10mm 12mm 15mm 18mm 20mm 25mm, Nut M2.5, Screw M2.5 x 6mm.
 - Jumper Wires ( https://www.amazon.com/gp/product/B08151TQHG/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 )
+- HiLetgo 0.96" SSD1306 I2C IIC SPI Serial 128X64 OLED LCD Display 4 Pin Font Color Yellow Blue ( https://www.amazon.com/gp/product/B06XRCQZRX/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1 ) 
+- LeMotech ABS Plastic Junction Box Dustproof Waterproof IP65 Electrical Enclosure Box Universal Project Enclosure Grey with PC Transparent Clear Cover 3.3 x 3.2 x 2.2 inch (83 x 81 x 56 mm) ( https://www.amazon.com/gp/product/B07BPMNCP3/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1 )
 
 ## Build Cost
 
 Below is a ruff estimate of the cost of materials to make this  pool monitor, this is not including any type of connectors or special wires that you might want to use to make it pretty or even the type of mounts to secure things in place.  But mostly a cost of all the materials listed above.
 
 ![](BuildCost.png)
+![](BuildCostLCD.png)
 
 
 ## APPS AND ONLINE SERVICES
@@ -59,6 +62,11 @@ Below is a ruff estimate of the cost of materials to make this  pool monitor, th
 ![](Schematic/PoolMonitor.png)
 
 The Solar module and panel was added in version 2 along with a volt meter to monitor the battery status.  The Volt meter circuit has an on and off switch in case you needed to reboot everything without having to take a screw driver to it.  The Volt meter is independent and does not have to be hooked up to the Arduino, it will still pass the needed voltage to the solar module with the option to monitor the voltage from the mater.  Dis can also be disabled in the code by setting the GetVm to false.
+
+Below is the same schematic as shown above, but also includes the option to add a 4 pin LCD Screen.
+
+![](Schematic/PoolMonitorLCD.png)
+
 
 ## Web UI
 
@@ -84,3 +92,14 @@ Version 2 of the finished project:
 ### Outside Bottom
 
 ![](pictures/v2_bottom.JPG)
+
+# Change Log
+
+## v3.x.x.x
+* Added Option to use a LCD Screen that is attached to the circuit.
+
+## v2.2.0.2
+* Increased Batter Capacity
+* Added Power and Solar Power Switch
+* Added OFFLINE for devices that are not hooked up in the webpage.
+* Added Option to configure pH meter through the Web UI.
