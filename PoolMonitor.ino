@@ -34,7 +34,7 @@ char pass[] = SECRET_PASS;                  // your network password (use for WP
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
 int webRefresh = 60;                        // Web Refresh interval
 bool isConnected;                           // marker to toggle the connection for serial diagnostics
-bool useWifi=false;                          // Enabled or disable the wifi functionality and the webpage
+bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
 bool _getOutsideTemp=true;                     // Report back the Outside Local Temperature
 bool _getPoolTemp=true;                      // Report back on the Pool Temperature
 bool GetpH=true;                            // Report back on the pH; 
@@ -549,7 +549,7 @@ void loop() {
   if (DisplayConnected)
   {
     PrintDisplay();
-    delay(500); 
+    delay(5000); 
   }
 }
 /*
@@ -608,7 +608,7 @@ void PrintDisplay()
 
     display.setCursor(0, 50);
     //display.setTextColor(BLUE);
-    display.print("Ph Level:");
+    display.print("pH Level:");
     //display.setTextColor(YELLOW);
         if (myPh > 0 && myPh < 14)
     {
