@@ -95,8 +95,9 @@ Version 2 of the finished project:
 
 # Change Log
 
-## v3.x.x.x
+## v2024.03.22
 * Added Option to use a LCD Screen that is attached to the circuit.
+* Changed Version to match the release date, also added the version to the command menu
 
 ## v2.2.0.2
 * Increased Batter Capacity

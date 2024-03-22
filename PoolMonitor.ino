@@ -10,10 +10,8 @@
  * Repo: https://github.com/burnsoftnet/Pool-Monitor
  * 
  * Developer: Joe M.
- * Version 3.0.0.5
- * Last Rev. Date: May 9th 2022
  */
-
+#include "Settings.h"
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <OneWire.h>
@@ -21,34 +19,20 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Fonts/FreeMono9pt7b.h>
 #include "dht.h"
 #include "ph_grav.h"  
 #include "arduino_secrets.h" 
 #include "VoltMeter.h"
 
-#define SLAVE_ADDRESS 0x40 
-
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;                  // your network SSID (name)
 char pass[] = SECRET_PASS;                  // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                           // your network key Index number (needed only for WEP)
-int webRefresh = 60;                        // Web Refresh interval
 bool isConnected;                           // marker to toggle the connection for serial diagnostics
-bool useWifi=true;                          // Enabled or disable the wifi functionality and the webpage
-bool _getOutsideTemp=true;                     // Report back the Outside Local Temperature
-bool _getPoolTemp=true;                      // Report back on the Pool Temperature
-bool GetpH=true;                            // Report back on the pH; 
-bool GetVm=true;                            // Report back on the battery voltage
-bool buggerme = false;                       // Enabled Debug Messages
-bool DisplayConnected = true;  // Switch to toggle functions for the LCD Screen if attached.
-#define OutsideTemp A0                      // Analog Pin sensor is connected to
 Gravity_pH pH = A1;                         // assign analog pin A1 of Arduino to class Gravity_pH. connect output of pH sensor to pin A0
 const int PoolTemp = 2;                     // Assigned Pool monitor A2 to the Water proof temperature sensor
 const int VoltMeter = 2;                     // Volt meter input
-
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -77,7 +61,9 @@ WiFiServer server(80);                      //The port to open up the web server
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  if (DisplayConnected)
+  Serial.print("Starting Pool Monitor v");
+  Serial.println(VERSION);
+  if (DISPLAYCONNECTED)
   {
      if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
     Serial.println(F("SSD1306 allocation failed"));
@@ -85,18 +71,25 @@ void setup() {
   } 
   }
   
-  if (DisplayConnected)
+  if (DISPLAYCONNECTED)
   {
     delay(2000);
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.setCursor(0, 10);
-    display.println("Pool Monitor");
+    if (USE_BIG_TEXT)
+    {
+        display.setFont(&FreeMono9pt7b);
+    }
+    display.println("Pool");
+    display.println("Monitor");
+    display.print("v");
+    display.println(VERSION);
     display.display();   
   }
   
-  if (useWifi)
+  if (USE_WIFI)
   {
     InitWifi();
     printWifiStatus();  
@@ -104,7 +97,7 @@ void setup() {
   
   SetupPH();
   SetupDallasTempMonitor();
-  if (GetVm)
+  if (GET_BATTERY_VOLTAGE)
   {
     pinMode(VoltMeter, INPUT);
   }
@@ -171,7 +164,7 @@ void SetupDallasTempMonitor()
  */
 void DebugMessage(String msg)
 {
-  if (buggerme)
+  if (BUGGERME)
   {
     Serial.println(msg);
   }
@@ -201,7 +194,7 @@ double GetPoolTemp()
  */
 void WebPage_LocalTemp()
 {
-  if (_getOutsideTemp)
+  if (GET_OUTSIDE_TEMP)
   {
     double oTemp = GetLocalTemp();
     double oHum = DHT.humidity;
@@ -239,7 +232,7 @@ void WebPage_LocalTemp()
  */
 void WebPage_PoolTemp()
 {
-  if (_getPoolTemp)
+  if (GET_POOL_TEMP)
   {
     double pTemp = GetPoolTemp();
     
@@ -263,7 +256,7 @@ void WebPage_PoolTemp()
  */
 void WebPage_pH()
 {
-  if (GetpH)
+  if (GET_PH)
   {
     float myPh = pH.read_ph();
     
@@ -307,7 +300,7 @@ void WebPage_pH()
  */
 void WebPage_Voltage()
 {
-  if (GetVm)
+  if (GET_BATTERY_VOLTAGE)
   {
     double volt = voltmeter.readVoltageIn(VoltMeter,0.90) / 11;
     client.println("<tr>");
@@ -536,7 +529,7 @@ void doWebPage()
  * Main Function
  */
 void loop() {
-  if (useWifi)
+  if (USE_WIFI)
   {
       doWebPage(); 
   }
@@ -546,7 +539,7 @@ void loop() {
     char value = Serial.read();           //read the string until we see a <CR>  
     menuExec(value);
   }
-  if (DisplayConnected)
+  if (DISPLAYCONNECTED)
   {
     PrintDisplay();
     delay(5000); 
@@ -562,62 +555,81 @@ void PrintDisplay()
     double pTemp = GetPoolTemp();
     float myPh = pH.read_ph();
     display.clearDisplay();
-    
-    display.setCursor(10, 0);
-    display.print("Pool Monitor");
-    
-    display.setCursor(0, 20);
-    display.print("Outside Temp:");
-    if (oTemp > 32)
+    display.setCursor(10, 10);
+    display.println("Pool Mon");
+    if (USE_BIG_TEXT)
     {
-      display.println(oTemp);  
-    } else {
-      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display.println("OFFLINE");
-      //display.setTextColor(SSD1306_WHITE);
-    }
+      display.setCursor(0, 40);
+      display.print("PT:");
     
-    //display.display(); 
+      if (pTemp > 0)
+      {
+        display.println(pTemp);  
+      } else {
+        display.println("OFFLINE");
+      }
 
-    display.setCursor(0, 30);
-    display.print("Outside hum.:");
-    if (oHum > 0)
-    {
-      display.println(oHum);
+      display.print("pH:");
+      if (myPh > 0 && myPh < 14)
+      {
+        display.println(myPh);  
+      } else {
+        display.println("OFFLINE");
+      }
     } else {
-      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display.println("OFFLINE");
-      //display.setTextColor(SSD1306_WHITE); 
-    }
-     
+      display.setCursor(0, 20);
+      display.print("Outside Temp:");
+      if (oTemp > 32)
+      {
+        display.println(oTemp);  
+      } else {
+        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+        display.println("OFFLINE");
+        //display.setTextColor(SSD1306_WHITE);
+      }
+      
+      //display.display(); 
 
-    display.setCursor(0, 40);
-    display.print("Pool Temp:");
-    display.println(pTemp);
-    
-    if (pTemp > 0)
-    {
-      //display.setTextColor(SSD1306_BLACK);
-      display.println(pTemp);  
-     // display.setTextColor(SSD1306_WHITE);
-    } else {
-      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display.println("OFFLINE");
-      //display.setTextColor(SSD1306_WHITE);
-    } 
+      display.setCursor(0, 30);
+      display.print("Outside hum.:");
+      if (oHum > 0)
+      {
+        display.println(oHum);
+      } else {
+        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+        display.println("OFFLINE");
+        //display.setTextColor(SSD1306_WHITE); 
+      }
+      
 
-    display.setCursor(0, 50);
-    //display.setTextColor(BLUE);
-    display.print("pH Level:");
-    //display.setTextColor(YELLOW);
-        if (myPh > 0 && myPh < 14)
-    {
-      //display.setTextColor(SSD1306_BLACK);
-      display.println(myPh);  
-    } else {
-      //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display.println("OFFLINE");
-      //display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0, 40);
+      display.print("Pool Temp:");
+      display.println(pTemp);
+      
+      if (pTemp > 0)
+      {
+        //display.setTextColor(SSD1306_BLACK);
+        display.println(pTemp);  
+      // display.setTextColor(SSD1306_WHITE);
+      } else {
+        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+        display.println("OFFLINE");
+        //display.setTextColor(SSD1306_WHITE);
+      } 
+
+      display.setCursor(0, 50);
+      //display.setTextColor(BLUE);
+      display.print("pH Level:");
+      //display.setTextColor(YELLOW);
+      if (myPh > 0 && myPh < 14)
+      {
+        //display.setTextColor(SSD1306_BLACK);
+        display.println(myPh);  
+      } else {
+        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+        display.println("OFFLINE");
+        //display.setTextColor(SSD1306_WHITE);
+      }
     }
     
     display.display(); 
@@ -650,8 +662,9 @@ void printWifiStatus() {
 void printMenu()
 {
   Serial.println("");
-  Serial.println("POOL MONITOR");
-  Serial.println("---------------------");
+  Serial.print("POOL MONITOR v");
+  Serial.println(VERSION);
+  Serial.println("--------------------------------------------------");
   Serial.println("");
   Serial.println("Send the number of the command you want to execute");
   Serial.println("");
