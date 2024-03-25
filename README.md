@@ -95,7 +95,7 @@ Version 2 of the finished project:
 
 # Settings
 
-A majority of the settings can be managed in the Settings.h file.  Here you can adjust settings, or if you wanted to Disable Wifi, or the Display you can do that here
+A majority of the settings can be managed in the Settings.h file.  Here you can adjust settings, or if you wanted to Disable Wifi, or the Display you can do that here.  This is handy if you just wanted to run this on a regular Arduino Uno with the display, then you can disable Wifi, or if you just wanted to run the Wifi with no display, you can disable the display option.
 
 ```C++
 /*
