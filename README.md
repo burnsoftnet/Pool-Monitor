@@ -98,6 +98,7 @@ Version 2 of the finished project:
 ## v2024.03.22
 * Added Option to use a LCD Screen that is attached to the circuit.
 * Changed Version to match the release date, also added the version to the command menu
+* Refactor WebUI code and put it in it's own class to clean up the Main source.
 
 ## v2.2.0.2
 * Increased Batter Capacity

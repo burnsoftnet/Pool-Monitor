@@ -164,6 +164,7 @@ void SetupDallasTempMonitor()
 
 /*
  * Print debug messages to the serial output
+ * @param msg = The String message that you want printed in the console.
  */
 void DebugMessage(String msg)
 {
