@@ -228,87 +228,6 @@ void DoWebpageContent()
 }
 
 /*
- * Print out the Web Page menu for the pH Calibration Section
- */
-void DoPhCalibrationWeb()
-{
-    client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
-    client.println("Connection: close");  
-    client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<center>");
-    client.println("<b><h1>Pool Monitor</h1></b>");
-    client.println("<b><h1>ph Calibration</h1></b>");
-    client.println("</br>");
-    client.println("<table border=1>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal4\">ph Cal 4</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal7\">ph Cal 7</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal10\">ph Cal 10</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCalClear\">ph Cal Clear</a></td>");
-    client.println("</tr>");
-    client.println("</table>");
-    client.println("</br>");
-    client.println("</br>");
-    client.print("<a href=\"/\">Back To Main Menu</a>");
-    client.println("<center>");
-    client.println("</html>");
-}
-
-/*
- * Print out the Webpage that will display that the low, mid or high clibration
- * was performed with the option to head back to the calibration menu.
- */
-void DoPhCalibrationWeb(int level)
-{
-    String LevelMarker = "";    
-    switch (level)
-    {
-      case 1:
-        pH.cal_low();
-        LevelMarker="ph Low Calibrated";
-        break;
-      case 2:
-        pH.cal_mid(); 
-        LevelMarker="ph Mid Calibrated";
-        break;
-      case 3:
-        pH.cal_high(); 
-        LevelMarker="ph High Calibrated";
-        break;
-      case 4:
-        pH.cal_clear();
-        LevelMarker="ph Calibration Cleared";
-        break;
-    }
-    client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
-    client.println("Connection: close");  
-    client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<center>");
-    client.println("<b><h1>" + LevelMarker + "</h1></b>");
-    client.println("<b>Completed!</b>");
-    client.println("</br>");
-    client.print("<a href=\"/cal\">Back</a>");
-    client.println("<center>");
-    client.println("</html>");
-}
-
-/*
  * Listen for incoming clients connecting to the webpage
  */
 void doWebPage()
@@ -358,19 +277,23 @@ void doWebPage()
           // send a standard http response header
           if (doCalibration)
           {
-            DoPhCalibrationWeb();
+            client.println(webserver.doPhCalibrationWeb());
           } else if (doCal4)
           {
-            DoPhCalibrationWeb(1);
+            pH.cal_low();
+            client.println(webserver.doPhCalibrationWeb(1));
           }else if (doCal7)
           {
-            DoPhCalibrationWeb(2);
+            pH.cal_mid(); 
+            client.println(webserver.doPhCalibrationWeb(2));
           }else if (doCal10)
           {
-            DoPhCalibrationWeb(3);
+            pH.cal_high(); 
+            client.println(webserver.doPhCalibrationWeb(3));
           }else if (doCalClear)
           {
-            DoPhCalibrationWeb(4);
+            pH.cal_clear();
+            client.println(webserver.doPhCalibrationWeb(4));
           }
           else 
           {
