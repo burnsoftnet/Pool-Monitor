@@ -12,6 +12,7 @@
  * Developer: Joe M.
  */
 #include "Settings.h"
+#include "WebServer.h"
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <OneWire.h>
@@ -51,6 +52,7 @@ char data[I2C_BUFFER_LEN];
 String temperatureData;
 dht DHT;
 voltmeter voltmeter;
+webserver webserver;
 
 WiFiClient client;
 
@@ -101,7 +103,8 @@ void setup() {
   {
     pinMode(VoltMeter, INPUT);
   }
- 
+  
+  Serial.println(webserver.localTemp(75, 50));
   
   Serial.println("Press ? to Display Command Menu");
 }
@@ -189,135 +192,6 @@ double GetPoolTemp()
   double temp = poolSensor.getTempFByIndex(0);
   return temp;
 }
-/*
- * Print out the local/outside temperature and humity in the webpage
- */
-void WebPage_LocalTemp()
-{
-  if (GET_OUTSIDE_TEMP)
-  {
-    double oTemp = GetLocalTemp();
-    double oHum = DHT.humidity;
-  
-    client.println("<tr>");
-    client.print("<td>");
-    client.print("Outside Temperature </td>");
-    client.print("<td>");
-    if (oTemp > 32)
-    {
-      client.print(oTemp);
-      client.println(" F </td>"); 
-    } else {
-      client.print("<font color=red>OFFLINE</font>");
-      client.println("</td>");
-    }
-    client.println("</tr>");
-    client.println("<tr>");
-    client.print("<td>");
-    client.print("Outside Humidity </td>");
-    client.print("<td>");
-    if (oHum > 0) 
-    {
-      client.print(oHum);
-      client.println(" % </td>");  
-    } else {
-      client.print("<font color=red>OFFLINE</font>");
-      client.println("</td>");
-    }
-    client.println("</tr>");
-  }
-}
-/*
- * Print out the Pool Temperature for the Web Page
- */
-void WebPage_PoolTemp()
-{
-  if (GET_POOL_TEMP)
-  {
-    double pTemp = GetPoolTemp();
-    
-    client.println("<tr>");
-    client.print("<td>");
-    client.print("Pool Temperature:  </td>");
-    client.print(" <td>");
-    if (pTemp > 0)
-    {
-      client.print(pTemp);
-      client.println(" F </td>");  
-    } else {
-      client.print("<font color=red>OFFLINE</font>");
-      client.println("</td>");
-    }
-    client.println("</tr>");
-  }
-}
-/*
- * Print out the Ph Table Row
- */
-void WebPage_pH()
-{
-  if (GET_PH)
-  {
-    float myPh = pH.read_ph();
-    
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("Ph Level:  </td>");
-    client.print("<td>");
-    if (myPh > 0 && myPh < 6)
-    {
-      client.print("<font color=darkyellow>");
-      client.print(myPh);
-      client.print("</font>");  
-    } else if (myPh > 6 && myPh < 8)
-    {
-      client.print("<font color=green>");
-      client.print(myPh);
-      client.print("</font>");
-    } else if (myPh > 8 && myPh < 10)
-    {
-      client.print("<font color=orange>");
-      client.print(myPh);
-      client.print("</font>");
-    } else if (myPh > 12 && myPh < 14 )
-    {
-      client.print("<font color=red>");
-      client.print(myPh);
-      client.print("</font>");
-    } else
-    {
-      client.print("<font color=red>");
-      client.print("OFFLINE");
-      client.print("</font>");
-    }
-    
-    client.println("</td>");
-    client.println("</tr>");
-  }
-}
-/*
- * Display voltage of battery in webpage
- */
-void WebPage_Voltage()
-{
-  if (GET_BATTERY_VOLTAGE)
-  {
-    double volt = voltmeter.readVoltageIn(VoltMeter,0.90) / 11;
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("Battery Voltage:  </td>");
-    client.print("<td>");
-    if (volt > 0)
-    {
-      client.print(volt);
-      client.println(" vdc</td>"); 
-    } else {
-      client.print("<font color=red>OFFLINE</font>");
-      client.println("</td>");
-    }
-    client.println("</tr>");
-  }
-}
 
 /*
  * Print out the webpage, close connection after the 
@@ -325,107 +199,32 @@ void WebPage_Voltage()
  */
 void DoWebpageContent()
 {
-    client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
-    client.println("Connection: close");  
-    client.println("Refresh: " + webRefresh); 
-    client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<center>");
-    client.println("<b><h1>Pool Monitor</h1></b>");
-    client.println("</br>");
-    client.println("<table border=1>");
-    WebPage_LocalTemp();
-    WebPage_PoolTemp();
-    WebPage_pH();
-    WebPage_Voltage();
-    client.println("</table>");
-    client.println("</br>");
-    client.println("<a href=\"/cal\">Click here to calibrate pH</a>");
-    client.println("<center>");
-    client.println("</html>");
-}
-
-/*
- * Print out the Web Page menu for the pH Calibration Section
- */
-void DoPhCalibrationWeb()
-{
-    client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
-    client.println("Connection: close");  
-    client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<center>");
-    client.println("<b><h1>Pool Monitor</h1></b>");
-    client.println("<b><h1>ph Calibration</h1></b>");
-    client.println("</br>");
-    client.println("<table border=1>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal4\">ph Cal 4</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal7\">ph Cal 7</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCal10\">ph Cal 10</a></td>");
-    client.println("</tr>");
-    client.println("<tr>");
-    client.println("<td>");
-    client.print("<a href=\"/phCalClear\">ph Cal Clear</a></td>");
-    client.println("</tr>");
-    client.println("</table>");
-    client.println("</br>");
-    client.println("</br>");
-    client.print("<a href=\"/\">Back To Main Menu</a>");
-    client.println("<center>");
-    client.println("</html>");
-}
-
-/*
- * Print out the Webpage that will display that the low, mid or high clibration
- * was performed with the option to head back to the calibration menu.
- */
-void DoPhCalibrationWeb(int level)
-{
-    String LevelMarker = "";    
-    switch (level)
+    double oTemp = 0;
+    double oHum = 0;
+    double pTemp = 0;
+    double volt = 0;
+    float myPh = 0;
+    if (GET_OUTSIDE_TEMP)
     {
-      case 1:
-        pH.cal_low();
-        LevelMarker="ph Low Calibrated";
-        break;
-      case 2:
-        pH.cal_mid(); 
-        LevelMarker="ph Mid Calibrated";
-        break;
-      case 3:
-        pH.cal_high(); 
-        LevelMarker="ph High Calibrated";
-        break;
-      case 4:
-        pH.cal_clear();
-        LevelMarker="ph Calibration Cleared";
-        break;
+      oTemp = GetLocalTemp();
+      oHum = DHT.humidity;
     }
-    client.println("HTTP/1.1 200 OK");
-    client.println("Content-Type: text/html");
-    client.println("Connection: close");  
-    client.println();
-    client.println("<!DOCTYPE HTML>");
-    client.println("<html>");
-    client.println("<center>");
-    client.println("<b><h1>" + LevelMarker + "</h1></b>");
-    client.println("<b>Completed!</b>");
-    client.println("</br>");
-    client.print("<a href=\"/cal\">Back</a>");
-    client.println("<center>");
-    client.println("</html>");
+    if (GET_POOL_TEMP)
+    {
+      pTemp = GetPoolTemp();
+    }
+    if (GET_BATTERY_VOLTAGE)
+    {
+      volt = voltmeter.readVoltageIn(VoltMeter,0.90) / 11;
+    }
+    if (GET_PH)
+    {
+      myPh = pH.read_ph();
+    }
+    String value = webserver.doWebpageContent(webRefresh, GET_OUTSIDE_TEMP, oTemp, oHum, GET_POOL_TEMP, pTemp, GET_BATTERY_VOLTAGE, volt, GET_PH, myPh);
+    DebugMessage(value);
+    client.println(value);
+
 }
 
 /*
@@ -440,7 +239,6 @@ void doWebPage()
     bool doCal7 = false;
     bool doCal10 = false;
     bool doCalClear = false;
-    //Serial.println("new client");
     // an http request ends with a blank line
     String myRequest = "";
     boolean currentLineIsBlank = true;
@@ -449,8 +247,6 @@ void doWebPage()
         char c = client.read();
         Serial.write(c);
         myRequest.concat(c);
-        //char *name = strtok(NULL,"=");
-        //Serial.write(name);
 
         if (myRequest == "GET /phCal4")
         {
@@ -479,22 +275,25 @@ void doWebPage()
         
         if (c == '\n' && currentLineIsBlank) {
           // send a standard http response header
-          //Serial.println(myRequest);
           if (doCalibration)
           {
-            DoPhCalibrationWeb();
+            client.println(webserver.doPhCalibrationWeb());
           } else if (doCal4)
           {
-            DoPhCalibrationWeb(1);
+            pH.cal_low();
+            client.println(webserver.doPhCalibrationWeb(1));
           }else if (doCal7)
           {
-            DoPhCalibrationWeb(2);
+            pH.cal_mid(); 
+            client.println(webserver.doPhCalibrationWeb(2));
           }else if (doCal10)
           {
-            DoPhCalibrationWeb(3);
+            pH.cal_high(); 
+            client.println(webserver.doPhCalibrationWeb(3));
           }else if (doCalClear)
           {
-            DoPhCalibrationWeb(4);
+            pH.cal_clear();
+            client.println(webserver.doPhCalibrationWeb(4));
           }
           else 
           {
