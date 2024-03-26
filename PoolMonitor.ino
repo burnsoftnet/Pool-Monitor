@@ -47,6 +47,8 @@ OneWire poolTemp(PoolTemp);
 //Load Dallas - proprietary dallas sensor protocol utilizing onewire - no license required
 DallasTemperature poolSensor(&poolTemp);
 
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
 //Define I2C buffer
 char data[I2C_BUFFER_LEN];
 String temperatureData;
@@ -104,8 +106,6 @@ void setup() {
     pinMode(VoltMeter, INPUT);
   }
   
-  Serial.println(webserver.localTemp(75, 50));
-  
   Serial.println("Press ? to Display Command Menu");
 }
 
@@ -147,8 +147,10 @@ void InitWifi()
  */
 void SetupPH()
 {
-  if (pH.begin()) { Serial.println("Loaded EEPROM");} 
-  Serial.println("");
+  if (pH.begin()) { 
+    Serial.println("Loaded Atlas pH EEPROM");
+    Serial.println("");
+  } 
 }
 
 /*
@@ -156,10 +158,15 @@ void SetupPH()
  */
 void SetupDallasTempMonitor()
 {
+  Serial.print("Initializing Temperature Monitor I2C");
   poolSensor.begin();
+  Serial.print(".");
   //Start the I2C interface
   Wire.begin(SLAVE_ADDRESS);
+  Serial.print(".");
   Wire.onRequest(requestEvent);
+  Serial.print(".");
+  Serial.println("DONE!");
 }
 
 /*
@@ -451,7 +458,7 @@ void printWifiStatus() {
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  Serial.print("signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
 }
@@ -478,6 +485,9 @@ void printMenu()
   Serial.println("p.) Show Pool Temp");
   Serial.println("h.) Show Outside Humidity");
   Serial.println("0.) Show Menu");
+  Serial.println("r.) Reboot Arduino");
+  Serial.println("");
+  Serial.println("--------------------------------------------------");
 }
 
 /*
@@ -534,6 +544,11 @@ void menuExec(char value)
     case '?':
         printMenu();
         break;
+    case 'r':
+        Serial.println("Attempting Reset of the Arduino");
+        resetFunc();  //call reset
+        break;
+
   }
 }
 /*
