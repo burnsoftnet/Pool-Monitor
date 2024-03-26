@@ -18,12 +18,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
-/*
- * moved to oleddisplay
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <Fonts/FreeMono9pt7b.h>      
-*/
 #include "OledDisplay.h"
 #include "dht.h"
 #include "ph_grav.h"  
@@ -39,11 +33,6 @@ Gravity_pH pH = A1;                         // assign analog pin A1 of Arduino t
 const int PoolTemp = 2;                     // Assigned Pool monitor A2 to the Water proof temperature sensor
 const int VoltMeter = 2;                     // Volt meter input
 
-/*
- * moved to oleddisplay
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-*/
 //Define the length of our buffer for the I2C interface Fallas Temperature
 const int I2C_BUFFER_LEN = 24;  //IMPORTANT MAX is 32!!!
 
@@ -75,34 +64,7 @@ void setup() {
   Serial.print("Starting Pool Monitor v");
   Serial.println(VERSION);
   oleddisplay.initDisplay(DISPLAYCONNECTED, "Pool", "Monitor", VERSION, USE_BIG_TEXT);
-  /*
- * moved to oleddisplay
-  if (DISPLAYCONNECTED)
-  {
-     if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) { // Address 0x3C for 128x64
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  } 
-  }
-  
-  if (DISPLAYCONNECTED)
-  {
-    delay(2000);
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 10);
-    if (USE_BIG_TEXT)
-    {
-        display.setFont(&FreeMono9pt7b);
-    }
-    display.println("Pool");
-    display.println("Monitor");
-    display.print("v");
-    display.println(VERSION);
-    display.display();   
-  }
-  */
+
   if (USE_WIFI)
   {
     InitWifi();
@@ -366,102 +328,11 @@ void loop() {
     double oHum = DHT.humidity;
     double pTemp = GetPoolTemp();
     float myPh = pH.read_ph();
-    oleddisplay.PrintDisplay(DISPLAYCONNECTED, "Pool Mon", USE_BIG_TEXT, pTemp, myPh, oTemp, oHum);
+    oleddisplay.PrintDisplay(DISPLAYCONNECTED, "Pool Mon.", USE_BIG_TEXT, pTemp, myPh, oTemp, oHum);
     delay(5000); 
   }
 }
-/*
- * Print information to the OLEd Screen
- */
-   /*
- * moved to oleddisplay
-void PrintDisplay()
-{
-    double oTemp = GetLocalTemp();
-    double oHum = DHT.humidity;
-    double pTemp = GetPoolTemp();
-    float myPh = pH.read_ph();
-    display.clearDisplay();
-    display.setCursor(10, 10);
-    display.println("Pool Mon");
-    if (USE_BIG_TEXT)
-    {
-      display.setCursor(0, 40);
-      display.print("PT:");
-    
-      if (pTemp > 0)
-      {
-        display.println(pTemp);  
-      } else {
-        display.println("OFFLINE");
-      }
 
-      display.print("pH:");
-      if (myPh > 0 && myPh < 14)
-      {
-        display.println(myPh);  
-      } else {
-        display.println("OFFLINE");
-      }
-    } else {
-      display.setCursor(0, 20);
-      display.print("Outside Temp:");
-      if (oTemp > 32)
-      {
-        display.println(oTemp);  
-      } else {
-        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-        display.println("OFFLINE");
-        //display.setTextColor(SSD1306_WHITE);
-      }
-      
-      //display.display(); 
-
-      display.setCursor(0, 30);
-      display.print("Outside hum.:");
-      if (oHum > 0)
-      {
-        display.println(oHum);
-      } else {
-        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-        display.println("OFFLINE");
-        //display.setTextColor(SSD1306_WHITE); 
-      }
-      
-
-      display.setCursor(0, 40);
-      display.print("Pool Temp:");
-      display.println(pTemp);
-      
-      if (pTemp > 0)
-      {
-        //display.setTextColor(SSD1306_BLACK);
-        display.println(pTemp);  
-      // display.setTextColor(SSD1306_WHITE);
-      } else {
-        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-        display.println("OFFLINE");
-        //display.setTextColor(SSD1306_WHITE);
-      } 
-
-      display.setCursor(0, 50);
-      //display.setTextColor(BLUE);
-      display.print("pH Level:");
-      //display.setTextColor(YELLOW);
-      if (myPh > 0 && myPh < 14)
-      {
-        //display.setTextColor(SSD1306_BLACK);
-        display.println(myPh);  
-      } else {
-        //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-        display.println("OFFLINE");
-        //display.setTextColor(SSD1306_WHITE);
-      }
-    }
-    
-    display.display(); 
-}
-*/
 /*
  * Print the SSID of the network that you are connected to
  * and print out the boards IP Address in the serial output

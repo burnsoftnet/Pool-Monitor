@@ -1,7 +1,7 @@
 /*
   General Setttings section to toggle on and off options
 */
-#define VERSION "2024.03.25"              //Current Version of Sketch, also related to the release date
+#define VERSION "2024.03.26"              //Current Version of Sketch, also related to the release date
 #define USE_BIG_TEXT true                 //Use bigger text for display, which will get rid of outside temp and just so pool temp PT and Ph
 #define DISPLAYCONNECTED true             // Switch to toggle functions for the LCD Screen if attached.
 #define BUGGERME false                    // Enabled Debug Messages

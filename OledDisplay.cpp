@@ -36,7 +36,11 @@ void oleddisplay::PrintDisplay(bool enabled, String title, bool use_big_text, do
     {
       display.clearDisplay();
       display.setCursor(10, 10);
-      display.println(title);
+      //display.cp437(true);
+      display.print(title);
+      //display.write(0x1F);
+      //display.write(0xF8);  // Print the degrees symbol
+      display.println();
       if (use_big_text)
       {
         display.setCursor(0, 40);
