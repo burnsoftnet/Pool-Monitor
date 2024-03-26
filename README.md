@@ -124,6 +124,7 @@ A majority of the settings can be managed in the Settings.h file.  Here you can 
 * Added Option to use a LCD Screen that is attached to the circuit.
 * Changed Version to match the release date, also added the version to the command menu
 * Refactor WebUI code and put it in it's own class to clean up the Main source.
+* Added option to reset the arduino through the serial connection, in the menu option.
 
 ## v2.2.0.2
 * Increased Batter Capacity
