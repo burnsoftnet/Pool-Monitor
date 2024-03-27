@@ -120,7 +120,7 @@ A majority of the settings can be managed in the Settings.h file.  Here you can 
 
 # Change Log
 
-## v2024.03.22
+## v2024.03.27 ( v3 )
 * Added Option to use a LCD Screen that is attached to the circuit.
 * Changed Version to match the release date, also added the version to the command menu
 * Refactor WebUI code and put it in it's own class to clean up the Main source.

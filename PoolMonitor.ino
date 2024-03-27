@@ -111,7 +111,8 @@ void InitWifi()
     delay(10000);
   }
   server.begin();
-  // you're connected now, so print out the status:
+  Serial.print("PASSED! Connected to SSID: ");
+  Serial.println(ssid);
 }
 
 /*
@@ -320,10 +321,6 @@ void loop() {
   }
   if (DISPLAYCONNECTED)
   {
-      /*
- * moved to oleddisplay
-    PrintDisplay();
-    */
     double oTemp = GetLocalTemp();
     double oHum = DHT.humidity;
     double pTemp = GetPoolTemp();

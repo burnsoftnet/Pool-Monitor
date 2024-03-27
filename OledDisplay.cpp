@@ -3,6 +3,16 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+/*
+ *  Initialize the the OLED Display for the startup function, which when the arduino is first starting up it
+ *  display the Title in two lines, and the version of the firmware if the display is hooked up and enabled 
+ *  @param enabled - If set to false it will not perform the initialization of the display
+ *  @param title1 - the First word of the title of the firmware
+ *  @param title1 - the Sconed word of the title of the firmware 
+ *  @param version - the version of the firmware to be displayed on startup
+ *  @param use_big_text - switch to the 9pt font, if set to false it will display the smaller text on the display
+ *  @return - Nothing
+ */
 void oleddisplay::initDisplay(bool enabled, String title1, String title2, String version, bool use_big_text)
 {
   if (enabled)
@@ -30,16 +40,25 @@ void oleddisplay::initDisplay(bool enabled, String title1, String title2, String
   }
 }
 
+/*
+ *  Print the data to the display to update the Pool Temp, Ph and Outside Temp and Humidity, 
+ *  If the use_big_text is enabled, it will just display the title, pool temp and ph level.
+ *  @param enabled - If set to false it will not perform the initialization of the display
+ *  @param title - The title of the firmware to be displayed at the top
+ *  @param use_big_text - switch to the 9pt font, if set to false it will display the smaller text on the display
+ *  @param pTemp - The Pool Temperature to be displayed
+ *  @param myPh - The pH Level to be displayed
+ *  @param oTemp - The Outside Temperature to be displayed
+ *  @param oHum - The Outside Humidity to be displayed
+ *  @return - Nothing
+ */
 void oleddisplay::PrintDisplay(bool enabled, String title, bool use_big_text, double pTemp, float myPh, double oTemp = 0, double oHum = 0)
 {
     if (enabled)
     {
       display.clearDisplay();
       display.setCursor(10, 10);
-      //display.cp437(true);
       display.print(title);
-      //display.write(0x1F);
-      //display.write(0xF8);  // Print the degrees symbol
       display.println();
       if (use_big_text)
       {
